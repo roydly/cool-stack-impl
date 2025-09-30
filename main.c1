@@ -1,0 +1,5 @@
+s <- (new Stack).init();
+s.push("X").push("Y");
+s.pop();  -- 正常弹出
+s.pop();  -- 再次弹出
+s.pop();  -- 触发Underflow错误
