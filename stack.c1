@@ -1,0 +1,97 @@
+-- 栈节点类
+class StackNode {
+    data : String;  -- 存储字符串类型数据（可按需改为Int）
+    next : StackNode;
+
+    init(d : String, n : StackNode) : StackNode {
+        {
+            data <- d;
+            next <- n;
+            self;
+        }
+    };
+
+    getData() : String { data };
+    getNext() : StackNode { next };
+};
+
+-- 栈主类
+class Stack {
+    top : StackNode;
+
+    init() : Stack {
+        {
+            top <- void;  -- 初始为空栈
+            self;
+        }
+    };
+
+    -- 检查栈是否为空
+    isEmpty() : Bool {
+        if void = top then true else false fi
+    };
+
+    -- 压入元素
+    push(item : String) : Stack {
+        {
+            top <- (new StackNode).init(item, top);
+            self;
+        }
+    };
+
+    -- 弹出元素（含空栈检查）
+    pop() : String {
+        if isEmpty() then
+            { abort(); "ERROR: Stack Underflow"; }  -- 边界处理
+        else
+            let item : String <- top.getData(),
+                temp : StackNode <- top
+            in {
+                top <- top.getNext();
+                temp <- void;  -- 释放节点（COOL无显式free，但GC会处理）
+                item;
+            }
+        fi
+    };
+
+    -- 查看栈顶元素
+    peek() : String {
+        if isEmpty() then
+            { abort(); "ERROR: Stack Empty"; }
+        else
+            top.getData()
+        fi
+    };
+
+    -- 打印栈内容（调试用）
+    print() : Object {
+        if isEmpty() then
+            out_string("Stack: [Empty]\n")
+        else
+            let current : StackNode <- top in {
+                out_string("Stack: [");
+                while not (void = current) loop
+                    {
+                        out_string(current.getData());
+                        current <- current.getNext();
+                        if not (void = current) then out_string(", ") fi;
+                    }
+                pool;
+                out_string("]\n");
+            }
+        fi
+    };
+};
+
+-- 测试主类
+class Main {
+    main() : Object {
+        let s : Stack <- (new Stack).init() in {
+            s.push("A").push("B").push("C");
+            s.print();  -- 输出: Stack: [C, B, A]
+            out_string("Pop: ").out_string(s.pop()).out_string("\n");  -- 输出: Pop: C
+            out_string("Peek: ").out_string(s.peek()).out_string("\n");  -- 输出: Peek: B
+            s.print();  -- 输出: Stack: [B, A]
+        }
+    };
+};
